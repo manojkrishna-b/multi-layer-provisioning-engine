@@ -1,0 +1,8 @@
+{
+    "bot_id": "worker-node-vizag-001",
+    "status": "provisioned",
+    "environment": "production-staging",
+    "capabilities": ["infrastructure-automation", "data-orchestration"],
+    "allocated_ram_gb": 16
+  }
+  
