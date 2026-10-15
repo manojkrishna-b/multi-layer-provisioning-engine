@@ -1,0 +1,32 @@
+---
+- name: Automate Multi-Layer Bot Server Provisioning
+  hosts: bot_workers
+  become: yes
+  vars:
+    bot_version: "2.4.1"
+    config_path: "/opt/bot/config"
+
+  tasks:
+    - name: Ensure target operational directories exist
+      ansible.builtin.file:
+        path: "{{ config_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Provision Linux environment dependencies
+      ansible.builtin.shell: |
+        echo "Updating security packages..."
+        apt-get update -y && apt-get upgrade -y
+      when: ansible_os_family == "Debian"
+
+    - name: Provision Windows environment dependencies
+      ansible.windows.win_shell: |
+        Write-Output "Configuring Windows Execution Policies..."
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+      when: ansible_os_family == "Windows"
+
+    - name: Deploy sanitized application configuration template
+      ansible.builtin.template:
+        src: bot_config.json.j2
+        dest: "{{ config_path }}/config.json"
+        mode: '0600'
